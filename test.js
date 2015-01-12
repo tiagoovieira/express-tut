@@ -55,10 +55,6 @@ describe('Listening cities on /cities', function(){
 
 describe('Creating new cities', function() {
 
-	before(function(){
-
-	});
-
 	it('Returns a 201 status code', function(done){
 		request(app)
 			.post('/cities')
@@ -72,4 +68,31 @@ describe('Creating new cities', function() {
 			.send('name=Springfield&description=Where+the+Simpsons+Live')
 			.expect(/springfield/i, done);
 	});
+
+	it('Validates the new city form', function(done){
+		request(app)
+			.post('/cities')
+			.send('name=&description=')
+			.expect(400, done);
+	});
+});
+
+
+describe('Deleting cities', function(){
+	
+	before(function(){
+		client.hset('cities', 'banana', 'desc');
+	});
+
+	after(function(){
+		client.flushdb();
+	});
+	
+
+	it('Returns a 204 status code', function(done) {
+		request(app)
+			.delete('/cities/banana')
+			.expect(204, done);
+	});
+
 });
